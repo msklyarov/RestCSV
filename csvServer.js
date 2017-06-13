@@ -7,7 +7,6 @@ const config = require('./config');
 // temporary
 const fs = require('fs');
 
-let is
 
 let mongoDb;
 mongoClient
@@ -16,12 +15,19 @@ mongoClient
     mongoDb = db;
   })
   .then(() => {
-    fetchFromCvsToMongoDb();
+    // fetchFromCvsToMongoDb();
     //setInterval(fetchFromCvsToMongoDb, config.readInterval);
-    // app.listen(config.port, function() {
-    //   console.log('Example app listening on port %s!', config.port);
-    // });
+    app.listen(config.httpPort, function() {
+      console.log('Example app listening on port %s!', config.httpPort);
+    });
   });
+
+app.get(config.httpRoute, function(req, res) {
+  console.log(req.query);
+  let dbQuery = getDbQueryFromHttp(req.query);
+
+  console.log(dbQuery);
+});
 
 fetchFromCvsToMongoDb = () => {
 
@@ -41,9 +47,9 @@ fetchFromCvsToMongoDb = () => {
   reader.on('data', (data) => {
     counter++;
 
-    bulk.insert(parse(data));
+    bulk.insert(parseCSV(data));
     isRecordInserted = true;
-    console.log(parse(data));
+    console.log(parseCSV(data));
 
     if (counter % config.bulkRecordsLimit === 0) {
       bulk.execute()
@@ -70,25 +76,20 @@ fetchFromCvsToMongoDb = () => {
         });
     }
     console.log('.csv file end was reached');
-    mongoDb.collection(config.tmpCollectionName)
-      .rename(config.collectionName, true)
+    mongoDb.collection(config.collectionName)
+      .rename(config.oldCollectionName, { dropTarget: true })
       .then(() => {
-        console.log('!!!!!')
+        mongoDb.collection(config.tmpCollectionName)
+          .rename(config.collectionName, { dropTarget:true })
+          .then(() => {
+            return mongoDb.collection;
+            // remove lock from server
+          });
       });
   });
-
-// bulk.execute()
-//   .then(() => {
-//     console.log('Ok');
-//   })
-//   .catch((err) => {
-//     console.error(err);
-//   });
-
-
 };
 
-parse = (data) => {
+parseCSV = (data) => {
   return Object.assign({}, data, {
     _fico: parseInt(data['FICO End Range'].split('-').shift()),
     'Markup/Discount': parseFloat(data['Markup/Discount']),
@@ -98,10 +99,31 @@ parse = (data) => {
   })
 };
 
+getDbQueryFromHttp = (query) => {
+  let dbQuery = {};
 
-//setInterval(fetchFromCvsToMongoDb, config.readInterval);
-// fetchFromCvsToMongoDb();
+  if (req.query.status) {
+    dbQuery['Status'] = req.query.status;
+  }
+  if (req.query.loan_maturity) {
+    dbQuery['Loan Maturity'] = req.query.loan_maturity;
+  }
 
-app.get('/', function(req, res) {
-  console.log(req.body);
-});
+  if (req.query.credit_score_trend) {
+    dbQuery['CreditScoreTrend'] = req.query.credit_score_trend;
+  }
+
+  if (req.query.markup_discount) {
+    dbQuery['Markup/Discount'] = req.query.markup_discount;
+  }
+
+  if (req.query.days_since_last_payment) {
+    dbQuery['DaysSinceLastPayment'] = req.query.days_since_last_payment;
+  }
+
+  if (req.query.never_late) {
+    dbQuery['NeverLate'] = req.query.never_late;
+  }
+
+  return dbQuery;
+};
