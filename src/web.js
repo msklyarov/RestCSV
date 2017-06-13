@@ -76,9 +76,7 @@ module.exports = function (options = {}) {
       }
 
       if (query['FICO End Range']) {
-        console.log('fico')
         const ficoMatch = query['FICO End Range'].match(/(>=|<=)(\d+)/)
-        console.log('ficomatch')
         if (ficoMatch) {
           const op = ficoMatch[1] === '<=' ? '$lte' : '$gte'
           const val = parseInt(ficoMatch[2])
