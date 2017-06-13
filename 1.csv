@@ -1,0 +1,4 @@
+"LoanId","NoteId","OrderId","OutstandingPrincipal","AccruedInterest","Status","AskPrice","Markup/Discount","YTM","DaysSinceLastPayment","CreditScoreTrend","FICO End Range","Date/Time Listed","NeverLate","Loan Class","Loan Maturity","Original Note Amount","Interest Rate","Remaining Payments","Principal + Interest","Application Type"
+"16862472","48040785","134017166","0.8","0.01","Late (16-30 days)","0.75","-7.76","174.54","48","DOWN","690-694","06/10/2017","false","B2","36","25.0","10.15","1","0.81","INDIVIDUAL"
+"18274346","49212128","108570484","0.83","0.01","In Grace Period","0.78","-6.97","80.27","36","DOWN","665-669","06/12/2017","false","B5","36","25.0","12.49","1","0.84","INDIVIDUAL"
+"11956295","40834605","126097159","0.86","0.05","Late (31-120 days)","0.6","-34.47","1299.99","138","DOWN","540-544","06/12/2017","false","C5","36","25.0","15.61","1","0.91","INDIVIDUAL"

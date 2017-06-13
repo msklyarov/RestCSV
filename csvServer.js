@@ -15,3 +15,19 @@ reader.addListener('data', (data) => {
     console.log(data);
   }
 });
+
+getStructureFromCsvRecord = (data) => {
+  return {
+    'LoanId',
+    'NoteId',
+    'OrderId',
+    'OutstandingPrincipal',
+    'AccruedInterest',
+    'Status',
+    'AskPrice',
+    'Markup-Discount',
+    'YTM',
+    'DaysSinceLastPayment',
+    'CreditScoreTrend','FICO End Range','Date/Time Listed','NeverLate','Loan Class','Loan Maturity','Original Note Amount','Interest Rate','Remaining Payments','Principal + Interest','Application Type'
+  };
+};
