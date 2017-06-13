@@ -8,26 +8,47 @@ const fs = require('fs');
 const reader = csv.createCsvFileReader(config.csvFileUrl);
 
 let firstLine = true;
+let bulk = col.initializeUnorderedBulkOp();
 reader.addListener('data', (data) => {
   if (firstLine) {
     firstLine = false;
   } else {
-    console.log(data);
+    console.log(getStructureFromCsvRecord(data));
+    bulk.insert(getStructureFromCsvRecord(data));
   }
 });
 
+bulk.execute()
+  .then(() => {
+    console.log('Ok');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+
 getStructureFromCsvRecord = (data) => {
   return {
-    'LoanId',
-    'NoteId',
-    'OrderId',
-    'OutstandingPrincipal',
-    'AccruedInterest',
-    'Status',
-    'AskPrice',
-    'Markup-Discount',
-    'YTM',
-    'DaysSinceLastPayment',
-    'CreditScoreTrend','FICO End Range','Date/Time Listed','NeverLate','Loan Class','Loan Maturity','Original Note Amount','Interest Rate','Remaining Payments','Principal + Interest','Application Type'
+    'LoanId': data[0],
+    'NoteId': data[1],
+    'OrderId': data[2],
+    'OutstandingPrincipal': data[3],
+    'AccruedInterest': data[4],
+    'Status': data[5],
+    'AskPrice': data[6],
+    'Markup/Discount': data[7],
+    'YTM': data[8],
+    'DaysSinceLastPayment': data[9],
+    'CreditScoreTrend': data[10],
+    'FICO End Range': data[11],
+    'Date/Time Listed': data[12],
+    'NeverLate': data[13],
+    'Loan Class': data[14],
+    'Loan Maturity': data[15],
+    'Original Note Amount': data[16],
+    'Interest Rate': data[17],
+    'Remaining Payments': data[18],
+    'Principal + Interest': data[19],
+    'Application Type': data[10]
   };
 };
