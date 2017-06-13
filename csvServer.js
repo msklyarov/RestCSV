@@ -21,9 +21,17 @@ mongoClient
     });
   });
 
+
 app.get(config.httpRoute, function(req, res) {
+  let outFormat = (req.query.format &&
+    req.query.format.toLocaleString() === 'json') ?
+      'json' : 'csv';
+
   console.log(req.query);
   let dbQuery = getDbQueryFromHttp(req.query);
+
+  console.log(mongoDb.collection(config.collectionName)
+    .find({ YTM: 80.27 }));
 
   console.log(dbQuery);
 });
@@ -48,7 +56,7 @@ fetchFromCvsToMongoDb = () => {
 
     bulk.insert(parseCSV(data));
     isRecordInserted = true;
-    console.log(parseCSV(data));
+    //console.log(parseCSV(data));
 
     if (counter % config.bulkRecordsLimit === 0) {
       bulk.execute()
@@ -101,35 +109,35 @@ parseCSV = (data) => {
 getDbQueryFromHttp = (query) => {
   let dbQuery = {};
 
-  if (req.query.status) {
-    dbQuery['Status'] = req.query.status;
+  if (query.status) {
+    dbQuery['Status'] = query.status;
   }
 
   //TODO: FICO End Range
-  
-  if (req.query.loan_maturity) {
-    dbQuery['Loan Maturity'] = req.query.loan_maturity;
+
+  if (query.loan_maturity) {
+    dbQuery['Loan Maturity'] = query.loan_maturity;
   }
 
-  if (req.query.credit_score_trend) {
-    dbQuery['CreditScoreTrend'] = req.query.credit_score_trend;
+  if (query.credit_score_trend) {
+    dbQuery['CreditScoreTrend'] = query.credit_score_trend;
   }
 
-  if (req.query.markup_discount) {
-    dbQuery['Markup/Discount'] = parseFloat(req.query.markup_discount);
+  if (query.markup_discount) {
+    dbQuery['Markup/Discount'] = parseFloat(query.markup_discount);
   }
 
-  if (req.query.days_since_last_payment) {
-    dbQuery['DaysSinceLastPayment'] = parseInt(req.query.days_since_last_payment);
+  if (query.days_since_last_payment) {
+    dbQuery['DaysSinceLastPayment'] = parseInt(query.days_since_last_payment);
   }
 
-  if (req.query.never_late &&
-    req.query.never_late.toLowerCase() === 'true') {
+  if (query.never_late &&
+    query.never_late.toLowerCase() === 'true') {
     dbQuery['NeverLate'] = true;
   }
 
-  if (req.query.ytm) {
-    dbQuery['YTM'] = parseInt(req.query.ytm);
+  if (query.ytm) {
+    dbQuery['YTM'] = parseFloat(query.ytm);
   }
 
   return dbQuery;
