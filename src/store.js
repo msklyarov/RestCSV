@@ -1,6 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird')
+const Err = require('./error')
 
 module.exports = function (options = {})  {
   const config = options.config
@@ -43,14 +44,22 @@ module.exports = function (options = {})  {
       }
     }
 
-    async get (query) {
+    async get (query, limit = config.db.maxRecordsLimit) {
       console.log(query)
-      return this._in.find(query, { '_id': 0, '_fico': 0 }).toArray()
+      const result = await this._in.find(query, { '_id': 0, '_fico': 0 })
+        .limit(limit + 1)
+        .toArray()
+
+      if (result && result.length > limit) {
+        throw new Err.TooManyRows()
+      }
+
+      return result
     }
 
     async _executeBulk () {
       const inserted = this._recordsInserted
-      console.log(`Comitting ${inserted} records`)
+      console.log(`Committing ${inserted} records`)
       const bulk = this._bulk
       this._createNewBulk()
       try {

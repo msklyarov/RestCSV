@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
-const app = require('express')();
-const json2csv = require('json2csv');
+const app = require('express')()
+const json2csv = require('json2csv')
+const Err = require('./error')
 
 module.exports = function (options = {}) {
   const config = options.config
@@ -64,6 +65,10 @@ module.exports = function (options = {}) {
         console.log('done', result.length)
         res.send(formatter(result)).status(200)
       } catch (e) {
+        if (e instanceof Err.TooManyRows) {
+          res.send('Too many rows returned, please refine your search').status(400)
+          return
+        }
         console.error(e)
         res.sendStatus(500)
       }

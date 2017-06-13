@@ -1,5 +1,5 @@
-const config = require('../config1')
-config.updater.interval = 15*1000
+const config = require('../config')
+config.updater.interval = 15 * 1000
 config.db.bulkRecordsLimit = 2
 
 const FileReader = require('./_fileReader.js')({
