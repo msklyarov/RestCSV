@@ -18,7 +18,7 @@ reader.addListener('data', (data) => {
     console.log(getStructureFromCsvRecord(data));
     bulk.insert(getStructureFromCsvRecord(data));
 
-    if ( counter % 500 == 0 ) {
+    if (counter % config.bulkRecordsLimit === 0) {
       bulk.execute();
       counter = 0;
       bulk = db.collection.initializeUnorderedBulkOp();
