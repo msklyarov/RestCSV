@@ -2,25 +2,26 @@ const request = require('request');
 const csv = require('ya-csv');
 const Promise = require('bluebird');
 const mongoClient = Promise.promisifyAll(require('mongodb').MongoClient);
-const config = require('./config');
 const app = require('express')();
-
-// const strm = request
-//   .get({
-//     url: 'https://resources.lendingclub.com/SecondaryMarketAllNotes.csv',
-//     encoding: 'utf-8'
-//   });
-
+const config = require('./config');
 // temporary
 const fs = require('fs');
 
-//const reader = new csv.CsvReader(strm, {columnsFromHeader: true});
-const reader = csv.createCsvFileReader(config.csvFileUrl, {columnsFromHeader: true});
+setInterval(fetchFromCvsToMongoDb, config.readInterval);
 
-let firstLine = true;
+fetchFromCvsToMongoDb = () => {
+  const csvStream = request
+    .get({
+      url: config.csvFileUrl,
+      encoding: 'utf-8'
+    });
+
+//const reader = new csv.CsvReader(csvStream, { columnsFromHeader: true });
+  const reader = csv.createCsvFileReader(config.csvFileUrl, { columnsFromHeader: true });
+
 //let bulk = col.initializeUnorderedBulkOp();
-let counter = 0;
-reader.on('data', (data) => {
+  let counter = 0;
+  reader.on('data', (data) => {
     counter++;
     console.log(data);
     // bulk.insert(data);
@@ -30,13 +31,12 @@ reader.on('data', (data) => {
     //   counter = 0;
     //   bulk = db.collection.initializeUnorderedBulkOp();
     // }
-});
+  });
 
-reader.on('end', function() {
-
-  console.log('reader.end()');
-  //db.tmpCollectionName.renameCollection(collectionName, true);
-});
+  reader.on('end', function() {
+    console.log('reader.end()');
+    //db.tmpCollectionName.renameCollection(collectionName, true);
+  });
 
 // bulk.execute()
 //   .then(() => {
@@ -45,10 +45,6 @@ reader.on('end', function() {
 //   .catch((err) => {
 //     console.error(err);
 //   });
-
-fetchFromCvsToMongoDb = () => {
-  let tmpCollectionName, collectionName
-  // logic here
 
 
 };
@@ -65,4 +61,4 @@ parse = (data) => {
 
 app.get('/', function(req, res) {
   console.log(req.body);
-}
+});
