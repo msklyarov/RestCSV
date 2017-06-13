@@ -14,7 +14,7 @@ mongoClient
     mongoDb = db;
   })
   .then(() => {
-    // fetchFromCvsToMongoDb();
+    fetchFromCvsToMongoDb();
     //setInterval(fetchFromCvsToMongoDb, config.readInterval);
     app.listen(config.httpPort, function() {
       console.log('Example app listening on port %s!', config.httpPort);
@@ -29,11 +29,19 @@ app.get(config.httpRoute, function(req, res) {
 
   console.log(req.query);
   let dbQuery = getDbQueryFromHttp(req.query);
-
-  console.log(mongoDb.collection(config.collectionName)
-    .find({ YTM: 80.27 }));
-
   console.log(dbQuery);
+
+  mongoDb.collection(config.collectionName)
+    .find(dbQuery, { '_id': 0, '_fico': 0 })
+    .toArray((err, data) => {
+      if (outFormat === 'json') {
+        res.json(data);
+      } else {
+        res.json(data);
+      }
+
+      console.log('OK');
+    });
 });
 
 fetchFromCvsToMongoDb = () => {
