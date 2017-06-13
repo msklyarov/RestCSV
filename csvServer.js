@@ -34,6 +34,11 @@ bulk.execute()
     console.error(err);
   });
 
+insertFromCvsToMongoDb = (tmpCollectionName, collectionName) => {
+  // logic here
+
+  db.tmpCollectionName.renameCollection('collectionName', true);
+};
 
 getStructureFromCsvRecord = (data) => {
   return {
