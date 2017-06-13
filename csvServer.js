@@ -7,7 +7,6 @@ const config = require('./config');
 // temporary
 const fs = require('fs');
 
-
 let mongoDb;
 mongoClient
   .connectAsync(config.mongoUrl)
@@ -105,6 +104,9 @@ getDbQueryFromHttp = (query) => {
   if (req.query.status) {
     dbQuery['Status'] = req.query.status;
   }
+
+  //TODO: FICO End Range
+  
   if (req.query.loan_maturity) {
     dbQuery['Loan Maturity'] = req.query.loan_maturity;
   }
@@ -114,15 +116,20 @@ getDbQueryFromHttp = (query) => {
   }
 
   if (req.query.markup_discount) {
-    dbQuery['Markup/Discount'] = req.query.markup_discount;
+    dbQuery['Markup/Discount'] = parseFloat(req.query.markup_discount);
   }
 
   if (req.query.days_since_last_payment) {
-    dbQuery['DaysSinceLastPayment'] = req.query.days_since_last_payment;
+    dbQuery['DaysSinceLastPayment'] = parseInt(req.query.days_since_last_payment);
   }
 
-  if (req.query.never_late) {
-    dbQuery['NeverLate'] = req.query.never_late;
+  if (req.query.never_late &&
+    req.query.never_late.toLowerCase() === 'true') {
+    dbQuery['NeverLate'] = true;
+  }
+
+  if (req.query.ytm) {
+    dbQuery['YTM'] = parseInt(req.query.ytm);
   }
 
   return dbQuery;
