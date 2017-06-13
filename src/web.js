@@ -23,13 +23,21 @@ module.exports = function (options = {}) {
       })
     }
 
+    static ToJson (data) {
+      return JSON.stringify(data)
+    }
+
+    static ToCsv (data) {
+      return 'csv not yet ready'
+    }
+
     async _handleRoute (req, res) {
-      const format = req.query.format && req.query.format.toLowerCase() === 'json' ? 'json' : 'csv'
+      const formatter = req.query.format && req.query.format.toLowerCase() === 'json' ? Web.ToJson : Web.ToCsv
       try {
         const dbQuery = Web.DbQueryFromReq(req.query)
         const result = await this._store.get(dbQuery)
         console.log('done', result.length)
-        res.send(result).status(200)
+        res.send(formatter(result)).status(200)
       } catch (e) {
         console.error(e)
         res.sendStatus(500)
