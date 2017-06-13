@@ -21,9 +21,6 @@ let firstLine = true;
 //let bulk = col.initializeUnorderedBulkOp();
 let counter = 0;
 reader.on('data', (data) => {
-  if (firstLine) {
-    firstLine = false;
-  } else {
     counter++;
     console.log(data);
     // bulk.insert(data);
@@ -33,7 +30,6 @@ reader.on('data', (data) => {
     //   counter = 0;
     //   bulk = db.collection.initializeUnorderedBulkOp();
     // }
-  }
 });
 
 reader.on('end', function() {
@@ -50,7 +46,8 @@ reader.on('end', function() {
 //     console.error(err);
 //   });
 
-insertFromCvsToMongoDb = (tmpCollectionName, collectionName) => {
+fetchFromCvsToMongoDb = () => {
+  let tmpCollectionName, collectionName
   // logic here
 
 
@@ -65,3 +62,7 @@ parse = (data) => {
     YTM: parseFloat(data.YTM)
   })
 };
+
+app.get('/', function(req, res) {
+  console.log(req.body);
+}
