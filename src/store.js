@@ -43,6 +43,11 @@ module.exports = function (options = {})  {
       }
     }
 
+    async get (query) {
+      console.log(query)
+      return this._in.find(query, { '_id': 0, '_fico': 0 }).toArray()
+    }
+
     async _executeBulk () {
       const inserted = this._recordsInserted
       console.log(`Comitting ${inserted} records`)
