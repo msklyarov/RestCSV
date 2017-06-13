@@ -14,6 +14,15 @@ module.exports = function (options = {})  {
     async init() {
       this._db = await mongoClient.connectAsync(config.db.url)
       this._col = this._db.collection(config.db.tmpCollectionName)
+      this._col.createIndex({Status: 1})
+      this._col.createIndex({_fico: 1})
+      this._col.createIndex({'Loan Maturity': 1})
+      this._col.createIndex({CreditScoreTrend: 1})
+      this._col.createIndex({'Markup/Discount': 1})
+      this._col.createIndex({DaysSinceLastPayment: 1})
+      this._col.createIndex({NeverLate: 1})
+      this._col.createIndex({YTM: 1})
+      this._in = this._db.collection(config.db.workingCollectionName)
       this._createNewBulk()
     }
 
