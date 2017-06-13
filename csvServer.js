@@ -9,12 +9,20 @@ const reader = csv.createCsvFileReader(config.csvFileUrl);
 
 let firstLine = true;
 let bulk = col.initializeUnorderedBulkOp();
+let counter = 0;
 reader.addListener('data', (data) => {
   if (firstLine) {
     firstLine = false;
   } else {
+    counter++;
     console.log(getStructureFromCsvRecord(data));
     bulk.insert(getStructureFromCsvRecord(data));
+
+    if ( counter % 500 == 0 ) {
+      bulk.execute();
+      counter = 0;
+      bulk = db.collection.initializeUnorderedBulkOp();
+    }
   }
 });
 
