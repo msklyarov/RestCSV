@@ -1,11 +1,36 @@
 const Promise = require('bluebird')
 const app = require('express')();
+const json2csv = require('json2csv');
 
 module.exports = function (options = {}) {
   const config = options.config
   const Store = options.Store || require('./store')({
     config
   })
+
+  const fieldColumns = [
+    'LoanId',
+    'NoteId',
+    'OrderId',
+    'OutstandingPrincipal',
+    'AccruedInterest',
+    'Status',
+    'AskPrice',
+    'Markup/Discount',
+    'YTM',
+    'DaysSinceLastPayment',
+    'CreditScoreTrend',
+    'FICO End Range',
+    'Date/Time Listed',
+    'NeverLate',
+    'Loan Class',
+    'Loan Maturity',
+    'Original Note Amount',
+    'Interest Rate',
+    'Remaining Payments',
+    'Principal + Interest',
+    'Application Type'
+  ]
 
   class Web {
     constructor () {
@@ -28,7 +53,7 @@ module.exports = function (options = {}) {
     }
 
     static ToCsv (data) {
-      return 'csv not yet ready'
+      return json2csv({ data: data, fields: fieldColumns })
     }
 
     async _handleRoute (req, res) {
@@ -50,8 +75,6 @@ module.exports = function (options = {}) {
       if (query['Status']) {
         dbQuery['Status'] = query['Status'];
       }
-
-      //TODO: FICO End Range
 
       if (query['Loan Maturity']) {
         dbQuery['Loan Maturity'] = query['Loan Maturity'];

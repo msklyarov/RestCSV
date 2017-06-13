@@ -3,9 +3,34 @@ const csv = require('ya-csv');
 const Promise = require('bluebird');
 const mongoClient = Promise.promisifyAll(require('mongodb').MongoClient);
 const app = require('express')();
+const json2csv = require('json2csv');
 const config = require('./config');
 // temporary
 const fs = require('fs');
+
+const fieldColumns = [
+  'LoanId',
+  'NoteId',
+  'OrderId',
+  'OutstandingPrincipal',
+  'AccruedInterest',
+  'Status',
+  'AskPrice',
+  'Markup/Discount',
+  'YTM',
+  'DaysSinceLastPayment',
+  'CreditScoreTrend',
+  'FICO End Range',
+  'Date/Time Listed',
+  'NeverLate',
+  'Loan Class',
+  'Loan Maturity',
+  'Original Note Amount',
+  'Interest Rate',
+  'Remaining Payments',
+  'Principal + Interest',
+  'Application Type'
+];
 
 let mongoDb;
 mongoClient
@@ -37,7 +62,8 @@ app.get(config.httpRoute, function(req, res) {
       if (outFormat === 'json') {
         res.json(data);
       } else {
-        res.json(data);
+        res.type('csv');
+        res.send(json2csv({ data: data, fields: fieldColumns }));
       }
 
       console.log('OK');
@@ -121,7 +147,20 @@ getDbQueryFromHttp = (query) => {
     dbQuery['Status'] = query.status;
   }
 
-  //TODO: FICO End Range
+  // if (query.fico) {
+  //   let re = /(>=|<=)(\d+)/;
+  //   let fRes = re.exec(query.fisco);
+  //   if (fRes.length === 2) {
+  //     switch (fRes[0]) {
+  //       case '>=':
+  //         dbQuery['_fico'] = {$gte: fRes[1]};
+  //         break;
+  //       case '<=':
+  //         dbQuery['_fico'] = {$lte: fRes[1]};
+  //         break;
+  //     }
+  //   }
+  // }
 
   if (query.loan_maturity) {
     dbQuery['Loan Maturity'] = query.loan_maturity;
